@@ -56,5 +56,29 @@ contract FundMeTest is ZkSyncChainChecker, CodeConstants, StdCheats, Test {
         assertEq(amountFunded, SEND_VALUE);
     }
 
+    function testAddsFunderToArrayOfFunders() public skipZkSync{
+        vm.startPrank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        vm.stopPrank();
+
+        address funder = fundMe.getFunder(0);
+        assertEq(funder, USER);
+    }
+
+    
+
+    modifier funded() {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        assert(address(fundMe).balance > 0);
+        _;
+    }
+
+    function testOnlyOwnerCanWithdraw() public funded skipZkSync{
+        vm.expectRevert();
+        vm.prank(address(3)); // Not the owner
+        fundMe.withdraw();
+    }
+
     
 }
