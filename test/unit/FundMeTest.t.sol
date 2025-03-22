@@ -35,5 +35,12 @@ contract FundMeTest is ZkSyncChainChecker, CodeConstants, StdCheats, Test {
         vm.deal(USER, STARTING_USER_BALANCE);
     }
 
+    function testPriceFeedSetCorrectly() public skipZkSync {
+        address retreivedPriceFeed = address(fundMe.getPriceFeed());
+        // (address expectedPriceFeed) = helperConfig.activeNetworkConfig();
+        address expectedPriceFeed = helperConfig.getConfigByChainId(block.chainid).priceFeed;
+        assertEq(retreivedPriceFeed, expectedPriceFeed);
+    }
+
     
 }
