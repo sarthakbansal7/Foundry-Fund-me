@@ -70,5 +70,22 @@ contract HelperConfig is CodeConstants, Script {
         });
     }
 
-    
+    /*//////////////////////////////////////////////////////////////
+                              LOCAL CONFIG
+    //////////////////////////////////////////////////////////////*/
+    function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
+        // Check to see if we set an active network config
+        if (localNetworkConfig.priceFeed != address(0)) {
+            return localNetworkConfig;
+        }
+
+        console2.log(unicode"⚠️ You have deployed a mock contract!");
+        console2.log("Make sure this was intentional");
+        vm.startBroadcast();
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
+        vm.stopBroadcast();
+
+        localNetworkConfig = NetworkConfig({priceFeed: address(mockPriceFeed)});
+        return localNetworkConfig;
+    }
 }
