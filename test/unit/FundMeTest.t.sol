@@ -80,5 +80,30 @@ contract FundMeTest is ZkSyncChainChecker, CodeConstants, StdCheats, Test {
         fundMe.withdraw();
     }
 
+    function testWithdrawFromASingleFunder() public funded skipZkSync{
+        // Arrange
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+
+        // vm.txGasPrice(GAS_PRICE);
+        // uint256 gasStart = gasleft();
+        // // Act
+        vm.startPrank(fundMe.getOwner());
+        fundMe.withdraw();
+        vm.stopPrank();
+
+        // uint256 gasEnd = gasleft();
+        // uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
+
+        // Assert
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        assertEq(endingFundMeBalance, 0);
+        assertEq(
+            startingFundMeBalance + startingOwnerBalance,
+            endingOwnerBalance // + gasUsed
+        );
+    }
+
     
 }
